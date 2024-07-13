@@ -1,5 +1,7 @@
+from fastapi import File, UploadFile
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
 
 class Token(BaseModel):
     access_token: str
@@ -12,6 +14,9 @@ class User(BaseModel):
     username: str
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
+    profile_image: Optional[str] = None
+    created_at: Optional[datetime] = None
+    description: Optional[str] = None
     disabled: Optional[bool] = None
 
 class UserInDB(User):
@@ -20,5 +25,5 @@ class UserInDB(User):
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
-    full_name: Optional[str] = None
+    full_name: str
     password: str
