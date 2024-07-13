@@ -21,7 +21,7 @@ def get_db():
         db.close()
 
     
-@router.post("/register", response_model=User)
+@router.post("/register")
 async def register_user(
     username: str = Form(...),
     email: str = Form(...),
@@ -66,7 +66,7 @@ async def register_user(
     db.commit()
     db.refresh(db_user)
     
-    return db_user
+    return {"message": "Usuário registrado com sucesso."}
 
 @router.get("/users/me", response_model=User)
 async def read_users_me(current_user: UserModel = Depends(get_current_active_user)):
