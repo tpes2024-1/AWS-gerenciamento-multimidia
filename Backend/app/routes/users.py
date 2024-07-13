@@ -88,6 +88,7 @@ async def read_users_me(current_user: UserModel = Depends(get_current_active_use
 
     return user_data
 
+""" # Só teste
 @router.get("/users/me/items")
 async def read_users_me_items(current_user: User = Depends(get_current_active_user)):
-    return [{"item_id": 1, "owner": current_user.username, "title": "Item Teste"}]
+    return [{"item_id": 1, "owner": current_user.username, "title": "Item Teste"}] """
