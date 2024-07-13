@@ -85,3 +85,4 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Usuário inativo")
     return current_user
+
