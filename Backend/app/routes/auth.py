@@ -1,18 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
+from sqlalchemy.orm import Session
+from ..database import SessionLocal
 from ..schemas import Token
-from ..models import db
-from ..security import (
-    authenticate_user,
-    create_access_token,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-)
+from ..models import User as UserModel
+from ..security import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token
 
 router = APIRouter()
 
+# Função auxiliar para obter a sessão do banco de dados
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @router.post("/login", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
