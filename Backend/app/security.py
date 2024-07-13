@@ -2,13 +2,16 @@ import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 from sqlalchemy.orm import Session
 from .database import SessionLocal
 from .models import User as UserModel 
 from .schemas import TokenData, UserInDB
+from typing import Set
+
+revoked_tokens: Set[str] = set()
 
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -30,8 +33,6 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return pwd_context.hash(password)
-
-
 
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
@@ -67,6 +68,8 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         detail="Não foi possível validar as credenciais",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if token in revoked_tokens:
+        raise credentials_exception
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
