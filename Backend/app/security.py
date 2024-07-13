@@ -31,15 +31,7 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def get_user(db: Session = Depends(get_db), username: str = None):
-    db_user = db.query(UserModel).filter(UserModel.username == username).first()
-    if db_user:
-        user_data = db_user.__dict__
-        return UserInDB(**user_data)
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Usuário não encontrado",
-    )
+
 
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
@@ -58,6 +50,16 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def get_user(db: Session = Depends(get_db), username: str = None):
+    db_user = db.query(UserModel).filter(UserModel.username == username).first()
+    if db_user:
+        user_data = db_user.__dict__
+        return UserInDB(**user_data)
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Usuário não encontrado",
+    )
 
 async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
