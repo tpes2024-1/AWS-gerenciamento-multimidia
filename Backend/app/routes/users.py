@@ -37,22 +37,6 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     
     return db_user
 
-    """ if user.username in db:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Nome de usuário já registrado",
-        )
-    hashed_password = get_password_hash(user.password)
-    db[user.username] = {
-        "username": user.username,
-        "email": user.email,
-        "full_name": user.full_name,
-        "hashed_password": hashed_password,
-        "disabled": False,
-    }
-    return db[user.username] """
-
-
 @router.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
