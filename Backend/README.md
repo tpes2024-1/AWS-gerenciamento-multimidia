@@ -31,3 +31,5 @@ uvicorn app.main:app --reload
 ## Docs
 Para acessar a documentação dos endpoints da API pelo swagger.
 > localhost:8000/docs#/
+
+No momento a API ainda usa um banco de dados local.
