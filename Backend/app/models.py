@@ -1,23 +1,14 @@
-from typing import Dict
+from datetime import datetime
 from .database import Base
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
     full_name = Column(String)
+    email = Column(String, unique=True, index=True)
+    profile_image = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    description = Column(String)
+    hashed_password = Column(String)
     disabled = Column(Boolean, default=False)
-
-
-""" 
-db: Dict[str, dict] = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "john@gmail.com",
-        "hashed_password": "$2b$12$/4we3oYJ5Zjr77UcYPSJNOsjxPUJIxGMufZfgBa3fIYHcztQNQIJq",
-        "disabled": False
-    }
-} """
