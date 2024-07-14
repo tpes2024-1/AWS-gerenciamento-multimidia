@@ -3,3 +3,6 @@ __pycache__/
 Backend/Drive.db
 Backend/profile_images
 .idea
+Backend/nohup.out
+Backend/venv/
+Frontend/node_modules/
