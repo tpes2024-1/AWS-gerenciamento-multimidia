@@ -1,0 +1,148 @@
+#root {
+  background-color: #e1e3ac;
+  overflow: hidden;
+}
+
+.Form,
+.Image {
+  display: flex;
+}
+
+.Image {
+  align-self: center;
+}
+
+.Tittle {
+  color: #FFF;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  max-width: 600px;
+}
+
+.Form {
+  border-radius: 17px;
+  background-color: #213435;
+  max-width: 500px;
+  width: 100%;
+  max-height: 512px;
+  display: flex;
+  margin: 17vh 50px;
+  text-align: center;
+  position: relative;
+  overflow: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+.Container {
+  display: flex;
+  justify-content: space-around;
+  height: 100vh;
+}
+
+.ContainerImage {
+  padding: 50px 60px;
+}
+
+.ContainerImage img {
+  width: 100%;
+}
+
+.Button {
+  align-self: center;
+  background-color: #FFF;
+  width: 90%;
+  height: 64px;
+  color: #000;
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  border-radius: 32px;
+  border: none;
+}
+
+.AppName {
+  color: #FFF;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
+  margin-bottom: 30px;
+  margin-top: 40px;
+  line-height: normal;
+  font-family: Tahu;
+}
+
+.InputPadrao {
+  border: solid white 2px;
+  background-color: transparent;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  width: 90%;
+  height: 64px;
+  font-size: 20px;
+  color: white;
+  padding: 15px 8px 8px 12px;
+}
+
+input:focus-visible {
+  outline: none;
+}
+
+.LabelPadrao {
+
+
+
+
+  color: #FFF;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 90%;
+  text-align: left;
+}
+
+.ToRegistro {
+  color: #FFF;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 50px;
+  width: 100%;
+}
+
+a {
+  color: white;
+}
+
+@media (max-width:1000px) {
+  .Image {
+    display: none;
+  }
+
+}
+
+@media (max-width:556px) {
+  .Form {
+    border-radius: 0px;
+    margin: 0px;
+    height: 100vh;
+    width: 100vw;
+    max-height: 100vh;
+    min-width: 100vw;
+
+  }
+
+  .AppName {
+    margin-top: 90px;
+    margin-bottom: 50px;
+  }
+
+  .ToRegistro {
+    bottom: 30px;
+  }
+}

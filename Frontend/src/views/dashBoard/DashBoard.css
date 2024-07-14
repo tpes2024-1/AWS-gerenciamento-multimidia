@@ -1,0 +1,362 @@
+.BtnAdd{
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1000;
+}
+.PostDashBoard {
+    max-width: calc(100vw - 305px);
+    width: 100%;
+    border: 2px solid white;
+    margin-left: 310px;
+}
+
+.PostDescricao {
+    padding: 7px 0px;
+    font-size: 14px;
+    color: white;
+    margin-left: 50px;
+    width: calc(100% - 50px);
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.PostDescricaoLetra {
+    cursor: pointer;
+}
+
+.PostHeader {
+    position: relative;
+    width: calc(100%);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 10px 0px 10px 0px;
+}
+
+.ModalMaior {
+    min-width: 800px;
+}
+
+.PhotoToPost {
+    min-width: 200px;
+    height: 200px;
+    margin: 10px;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+.PhotoToPost:hover {
+    min-width: 220px;
+    height: 220px;
+    display: flex;
+}
+
+.FiltrosItens {
+    max-width: 100%;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    padding: 5px 0px;
+}
+
+.FiltroItem {
+    background-color: var(--color5);
+    border: none;
+    margin-left: 5px;
+    color: white;
+    border-radius: 40px;
+    padding: 0px 30px;
+    transition: 0.5s;
+}
+
+.Descricao {
+    width: 100%;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.Descricao:focus-visible {
+    border: none;
+    outline: none;
+}
+
+.Descricao::placeholder {
+    color: white;
+}
+
+.ImagePost {
+    width: 100%;
+}
+
+.ListViews {
+    position: relative;
+    top: 0px;
+    overflow: auto;
+    height: calc(100vh - 4px);
+}
+
+.Modal {
+    width: 100%;
+}
+
+.ModalPost {
+    display: flex;
+    flex-direction: row;
+}
+
+.ModalImage {
+    display: flex;
+    justify-content: center;
+    width: 60%;
+    /* overflow: hidden; */
+
+}
+
+.LikeDiv {
+    justify-items: start;
+    margin-top: 5px;
+    padding: 7px 0px;
+    font-size: 14px;
+    color: white;
+    margin-left: 50px;
+    width: calc(100% - 50px);
+}
+
+.LikeButtom {
+    width: 20px;
+    filter: invert(100%);
+    cursor: pointer;
+}
+
+.TrashButtom {
+    cursor: pointer;
+    width: 23px;
+    margin-bottom: 5px;
+    filter: invert(100%);
+}
+
+.ModalLikeButtom {
+    width: 15px;
+    filter: invert(100%);
+}
+
+.ModalCommentsSide {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 40%;
+    /* align-items: center; */
+    padding-left: 1px;
+    overflow-y: auto;
+}
+
+.ModalPostHeader {
+    position: relative;
+    width: calc(100%+10px);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 5px 5px 5px 10px;
+    border: 2px solid white;
+}
+
+.ModalDescription {
+    display: flex;
+    justify-content: start;
+    font-size: 14px;
+    color: white;
+    padding: 5px 5px 5px 10px;
+    border-bottom: 2px solid white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
+}
+
+.ModalCommentsDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    padding: 5px 5px 5px 10px;
+    border-bottom: 2px solid white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
+}
+
+
+
+.ModalComments {
+    margin-bottom: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    border-right: 0px;
+    max-width: 250px;
+    font-size: 14px;
+    color: white;
+}
+
+.ModalCommentsBackSide {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ModalLikeDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+.ModalUserName {
+    color: white;
+    font-size: 18;
+    font-weight: 500;
+    padding-left: 3px;
+}
+
+.ModalAddCommentDiv {
+    justify-content: start;
+    padding: 5px 5px 5px 10px;
+    border-bottom: 2px solid white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
+}
+
+.CommentBox {
+    background-color: var(--color3);
+    color: white;
+    border: none;
+    padding: 10px 11px;
+    height: 80px;
+}
+
+.CommentBox:focus-visible {
+    outline: none;
+}
+
+.AddCommentModal {
+    display: flex;
+    flex-direction: column;
+    justify-self: start;
+}
+
+.CommentBox::placeholder {
+    font-size: 14px;
+    color: white;
+}
+
+.ButtonAddComment {
+    margin-top: 5px;
+    background-color: var(--color5);
+    font-size: 15px;
+    color: white;
+    max-width: 70%;
+    border-radius: 30px;
+    border-color: transparent;
+}
+
+.FecharModal {
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+#ImagePostDetail svg {
+    height: 100% !important;
+}
+
+#ImagePostDetail svg image {
+    width: 100%;
+    height: auto;
+}
+
+.DivScroolComments {
+    max-height: 280px;
+    height: 100%;
+    overflow: auto;
+
+}
+
+.Modal3Pontos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.BlockModal3Pontos {
+    font-size: 25px;
+    color: white;
+    padding: 5px;
+    border-radius: 15px;
+    background-color: var(--color1);
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+@media (max-width:994px) {
+    .BtnAdd{
+        bottom: 80px;
+    }
+    .PostDashBoard {
+        margin-left: 0px;
+        margin-bottom: 0px;
+        max-width: 100%;
+    }
+
+    .ListViews {
+        height: calc(100vh - 72px);
+    }
+
+    .ModalPost {
+        display: block;
+    }
+
+    .ModalImage {
+        width: 100%;
+    }
+
+    .ModalCommentsSide {
+        width: 100%;
+    }
+
+    .ModalComments {
+        max-width: 70%;
+    }
+
+}
+
+
+@media (max-width:800px) {
+    .ModalMaior {
+        min-width: calc(100% - 60px);
+    }
+
+    .ModalPost {
+        display: block;
+    }
+
+    .ModalImage {
+        width: 100%;
+    }
+
+    .ModalCommentsSide {
+        width: 100%;
+    }
+
+    .ModalComments {
+        max-width: 70%;
+    }
+
+}
+
+@media (max-width: 576px) {
+    .modal.show .modal-dialog {
+        margin: 0px;
+    }
+}

@@ -1,0 +1,102 @@
+.FormRegis {
+  overflow-y: auto;
+  border-radius: 17px;
+  background-color: #213435;
+  max-width: 500px;
+  width: 100%;
+  margin: 50px;
+  text-align: center;
+  position: relative;
+  min-height: 70vh;
+  scroll-behavior: smooth;
+}
+
+
+.InputImage {
+  background: white;
+  padding: 24px;
+  width: 250px;
+  height: 64px;
+  border-radius: 32px;
+  color: #000;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin: auto;
+}
+
+.InputImageDiv {
+  display: inline-flex;
+  width: 90%;
+  text-align: center;
+  justify-content: center;
+
+
+}
+
+.ButtonRegis {
+  align-self: center;
+  background-color: #FFF;
+  width: 90%;
+  height: 64px;
+  color: #000;
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  border-radius: 32px;
+  border: none;
+  margin-bottom: 25px;
+}
+
+.ToRegistroRegis {
+  color: #FFF;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+a {
+  color: white;
+}
+
+@media (max-width:1000px) {
+  .Image {
+    display: none;
+  }
+
+}
+
+@media (max-width:556px) {
+  .InputImage {
+    width: 183px;
+  }
+
+  .FormRegis {
+    border-radius: 0px;
+    margin: 0px;
+    height: 100vh;
+    width: 100vw;
+    max-height: 100vh;
+    min-width: 100vw;
+
+  }
+
+  .ToRegistroRegis {
+    bottom: 30px;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: var(--color2);
+}

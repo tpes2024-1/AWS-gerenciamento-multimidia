@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: front
+    restart: unless-stopped
+    networks:
+      - app-network
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver-front
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - web-root:/var/www/html
+      - ./docker/nginx/:/etc/nginx/conf.d
+    depends_on:
+      - nodejs
+    networks:
+      - app-network
+volumes:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /apps/front/src/
+      o: bind
+
+networks:
+  app-network:
+    driver: bridge
