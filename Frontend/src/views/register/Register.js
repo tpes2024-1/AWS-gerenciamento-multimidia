@@ -143,7 +143,7 @@ function Register() {
 
         </div>
         <div className='ToRegistroRegis'>
-          já tenho uma conta? <Link to='/'>Loge-se</Link>
+          já tem uma conta? <Link to='/'>Logue-se</Link>
         </div>
       </form>
     </div>
