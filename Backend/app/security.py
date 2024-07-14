@@ -7,16 +7,16 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 from sqlalchemy.orm import Session
 from .database import SessionLocal
-from .models import User as UserModel 
+from .models import User as UserModel
 from .schemas import TokenData, UserInDB
 from typing import Set
 
 revoked_tokens: Set[str] = set()
 
-
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+
 
 def get_db():
     db = SessionLocal()
@@ -25,14 +25,18 @@ def get_db():
     finally:
         db.close()
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password):
     return pwd_context.hash(password)
+
 
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
@@ -41,6 +45,7 @@ def authenticate_user(db, username: str, password: str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -52,6 +57,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def get_user(db: Session = Depends(get_db), username: str = None):
     db_user = db.query(UserModel).filter(UserModel.username == username).first()
     if db_user:
@@ -61,6 +67,7 @@ def get_user(db: Session = Depends(get_db), username: str = None):
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Usuário não encontrado",
     )
+
 
 async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -84,8 +91,8 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         raise credentials_exception
     return user
 
+
 async def get_current_active_user(current_user: UserInDB = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Usuário inativo")
     return current_user
-

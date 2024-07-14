@@ -5,11 +5,12 @@ from sqlalchemy.orm import Session
 from ..database import SessionLocal
 from ..schemas import RefreshTokenRequest, Token
 from ..models import User as UserModel
-from ..security import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY, authenticate_user, create_access_token, get_current_active_user, revoked_tokens, oauth2_scheme
+from ..security import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY, authenticate_user, create_access_token, \
+    get_current_active_user, revoked_tokens, oauth2_scheme
 from jose import JWTError, jwt
 
-
 router = APIRouter()
+
 
 # Função auxiliar para obter a sessão do banco de dados
 def get_db():
@@ -18,6 +19,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -34,8 +36,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     refresh_token = create_access_token(
         data={"sub": user.username}, expires_delta=timedelta(days=7)
-    )    
+    )
     return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
+
 
 @router.post("/refresh-token", response_model=Token)
 async def refresh_token(refresh_token_request: RefreshTokenRequest, db: Session = Depends(get_db)):
@@ -64,6 +67,7 @@ async def refresh_token(refresh_token_request: RefreshTokenRequest, db: Session 
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
+
 
 @router.post("/logout", response_model=dict)
 async def logout(token: str = Depends(oauth2_scheme)):

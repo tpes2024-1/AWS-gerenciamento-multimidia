@@ -1,14 +1,16 @@
 import base64
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
 from typing import Optional
+
+import boto3
 from fastapi import APIRouter, Depends, Form, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
+
 from ..database import SessionLocal
-from ..schemas import User
 from ..models import User as UserModel
+from ..schemas import User
 from ..security import get_password_hash, get_current_active_user
-import shutil
 
 router = APIRouter()
 
@@ -20,16 +22,25 @@ def get_db():
     finally:
         db.close()
 
-    
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=os.getenv('S3_ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('S3_SECRET_KEY')
+)
+
+bucket_name = os.getenv('AWS_BUCKET_NAME')
+
+
 @router.post("/register")
 async def register_user(
-    username: str = Form(...),
-    email: str = Form(...),
-    full_name: str = Form(...),
-    password: str = Form(...),
-    profile_image: Optional[UploadFile] = File(None),
-    description: Optional[str] = Form(None),
-    db: Session = Depends(get_db)
+        username: str = Form(...),
+        email: str = Form(...),
+        full_name: str = Form(...),
+        password: str = Form(...),
+        profile_image: Optional[UploadFile] = File(None),
+        description: Optional[str] = Form(None),
+        db: Session = Depends(get_db)
 ):
     db_user = db.query(UserModel).filter(UserModel.username == username).first()
     if db_user:
@@ -39,34 +50,40 @@ async def register_user(
         )
 
     hashed_password = get_password_hash(password)
-    
-    image_path = None
+
+    image_key = None
     if profile_image:
         if profile_image.content_type.lower() not in ('image/jpeg', 'image/png'):
             raise HTTPException(
                 status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                 detail="Somente arquivos JPEG ou PNG são suportados para a imagem de perfil",
             )
-        
-        image_path = f"profile_images/{username}_{profile_image.filename}"
-        os.makedirs(os.path.dirname(image_path), exist_ok=True)
-        with open(image_path, "wb") as buffer:
-            shutil.copyfileobj(profile_image.file, buffer)
-    
+
+        image_key = f"{username}/profile/{profile_image.filename}"
+
+        try:
+            s3_client.upload_fileobj(profile_image.file, bucket_name, image_key)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Erro ao fazer upload da imagem no S3: {str(e)}"
+            )
+
     db_user = UserModel(
         username=username,
         email=email,
         full_name=full_name,
-        profile_image=image_path,
+        profile_image=image_key,
         hashed_password=hashed_password,
         description=description,
-        created_at=datetime.utcnow()-timedelta(hours=3)
+        created_at=datetime.utcnow() - timedelta(hours=3)
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    
+
     return {"message": "Usuário registrado com sucesso."}
+
 
 @router.get("/users/me", response_model=User)
 async def read_users_me(current_user: UserModel = Depends(get_current_active_user)):
@@ -74,19 +91,34 @@ async def read_users_me(current_user: UserModel = Depends(get_current_active_use
         "username": current_user.username,
         "email": current_user.email,
         "full_name": current_user.full_name,
+        "description": current_user.description,
         "created_at": current_user.created_at,
         "disabled": current_user.disabled
     }
 
     if current_user.profile_image:
-        image_path = current_user.profile_image
-        if os.path.exists(image_path):
-            with open(image_path, "rb") as f:
-                image_data = f.read()
-                image_base64 = base64.b64encode(image_data).decode('utf-8')
-                user_data["profile_image"] = image_base64
+        file_name_with_extension = os.path.basename(current_user.profile_image)
+        file_extension = os.path.splitext(file_name_with_extension)[1].split('.')[1].lower()
+
+        try:
+            image_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': bucket_name, 'Key': current_user.profile_image,
+                        'ResponseContentType': 'image/' + file_extension},
+                ExpiresIn=3600
+            )
+
+            user_data["profile_image"] = image_url
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Erro ao gerar URL pré-assinada para a imagem: {str(e)}"
+            )
+    else:
+        user_data["profile_image"] = None
 
     return user_data
+
 
 """ # Só teste
 @router.get("/users/me/items")

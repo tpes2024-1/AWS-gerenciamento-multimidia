@@ -1,8 +1,11 @@
 from datetime import datetime
 from .database import Base
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
+
+
 class User(Base):
     __tablename__ = "users"
+
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     full_name = Column(String)
