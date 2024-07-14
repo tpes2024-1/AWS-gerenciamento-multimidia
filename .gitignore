@@ -2,3 +2,4 @@ Backend/.env
 __pycache__/
 Backend/Drive.db
 Backend/profile_images
+.idea
