@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import Register from './views/register/Register';
 import DashBoard from './views/dashBoard/DashBoard';
+import MediaManager from './components/MediaManager/MediaManager';
 // import GerenciarFotos from './views/gerenciarFotos/GerenciarFotos'
 // import VerificandoEmail from './views/verificandoEmail/VerificandoEmail';
 // import Profile from './views/profile/Profile';
@@ -18,7 +19,7 @@ import DashBoard from './views/dashBoard/DashBoard';
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Login
+    Component: DashBoard
   },
   {
     path: "/register",
@@ -29,10 +30,10 @@ const router = createBrowserRouter([
     path: "/home",
     Component: DashBoard
   },
-  // {
-  //   path: "/photos",
-  //   Component: GerenciarFotos
-  // },
+  {
+    path: "/mediaManager",
+    Component: MediaManager
+  },
   // {
   //   path: "/confirm-account/:email/:token",
   //   Component: VerificandoEmail,

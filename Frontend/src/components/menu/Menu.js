@@ -64,10 +64,10 @@ function Menu() {
           <div onClick={() => {
             window.location.pathname === '/home' ? console.log('') : navigate('/home')
           }} className={window.location.pathname === '/home' ? 'ItemMenuActive' : 'ItemMenu'}>Home</div>
-          {/* <hr className='BarraMenu' />
+          <hr className='BarraMenu' />
           <div onClick={() => {
-            window.location.pathname === '/photos' ? console.log('') : navigate('/photos')
-          }} className={window.location.pathname === '/photos' ? 'ItemMenuActive' : 'ItemMenu'} >Gerenciar Imagens</div>
+            window.location.pathname === '/mediaManager' ? console.log('') : navigate('/mediaManager')
+          }} className={window.location.pathname === '/mediaManager ' ? 'ItemMenuActive' : 'ItemMenu'} >Gerenciar Mídias</div>
           <hr className='BarraMenu' />
           <div onClick={() => {
             window.location.pathname === '/profile/' + localStorage.getItem('user_id') ? console.log('') : navigate('/profile/' + localStorage.getItem('user_id'))
@@ -77,7 +77,7 @@ function Menu() {
 
           <div onClick={() => {
             window.location.pathname === '/search/users' ? console.log('') : navigate('/search/users')
-          }} className={window.location.pathname === '/search/users' ? 'ItemMenuActive' : 'ItemMenu'} >Procurar usuário</div> */}
+          }} className={window.location.pathname === '/search/users' ? 'ItemMenuActive' : 'ItemMenu'} >Procurar usuário</div>
         </div>
         <hr className='BarraMenu' />
         <div onClick={() => setLogoutModal(true)} className='LogoutMenu'>

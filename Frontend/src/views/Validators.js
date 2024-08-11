@@ -49,7 +49,6 @@ const Validators = {
     return token
   },
   isNoAuth(navigate) {
-
     var token = localStorage.getItem('token')
     if (token !== null || token === '') {
       navigate('/home')

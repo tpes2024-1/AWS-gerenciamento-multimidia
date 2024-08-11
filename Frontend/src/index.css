@@ -57,3 +57,70 @@ code {
 .modal-content{
   border-radius: 15px;
 }
+
+.media-list {
+  margin-top: 20px;
+}
+
+.media-list li {
+  margin-bottom: 10px;
+  list-style-type: none;
+}
+
+.media-list li span {
+  margin-left: 10px;
+}
+
+.media-manager {
+  display: flex;
+  justify-content: baseline;
+  width: 100%;
+  padding-top: 5%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  overflow: scroll;
+}
+
+.action-select, .media-type-select, .file-input, .text-input, .submit-button {
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.form {
+  width: 80%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.media-item {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.media-content {
+  max-width: 100%;
+  height: auto;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.media-list {
+  max-height: 400px;
+  overflow-y: scroll;
+}
