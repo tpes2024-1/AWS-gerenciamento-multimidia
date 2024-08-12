@@ -1,190 +1,249 @@
 import React, { useState } from 'react';
+import Menu from '../../components/menu/Menu.js'
+import instance from '../../api.js';
+import ItemMedia from './ItemMedia.js';
 
 function MediaManager() {
-  const [action, setAction] = useState('');
-  const [mediaType, setMediaType] = useState('');
+  const [action, setAction] = useState('create');
+  const [mediaType, setMediaType] = useState('image');
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
+
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
+
   const [mediaId, setMediaId] = useState('');
-  const [query, setQuery] = useState('');
-  const [selectedMedia, setSelectedMedia] = useState(null);
-  const [allMedia, setAllMedia] = useState([]);
-  const [filteredMedia, setFilteredMedia] = useState([]);
+  const [mediaTypeUpdate, setMediaTypUpdate] = useState('image');
+  const [fileUpdate, setFileUpdate] = useState(null);
+  const [descriptionUpdate, setDescriptionUpdate] = useState('');
+  const [tagsUpdate, setTagsUpdate] = useState('');
+
+  const [queryMedias, setQueryMedias] = useState([]);
+  const [queryDescription, setQueryDescription] = useState('');
+  const [queryTag, setQueryTag] = useState('');
+  const [queryNomeArquivo, setQueryNomeArquivo] = useState('');
+
+  const [allMedia, setAllMedia] = useState({
+    all: []
+  });
+  const [filteredMedia, setFilteredMedia] = useState(null);
 
   const handleFileUpload = (e) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      setFile(reader.result);
-    };
-    reader.readAsDataURL(e.target.files[0]);
+    setFile(e.target.files[0]);
   };
 
-  const handleCreate = () => {
-    const newMedia = {
-      id: Date.now(),
-      type: mediaType,
-      file: file,
-      title: title,
-      description: description,
-      tags: tags.split(',').map(tag => tag.trim()),
-      uploadDate: new Date().toISOString(),
-    };
+  const handleCreate = async () => {
 
-    localStorage.setItem(newMedia.id, JSON.stringify(newMedia));
-    alert('Media uploaded successfully!');
-  };
-
-  const handleRead = () => {
-    const media = JSON.parse(localStorage.getItem(mediaId));
-    if (media) {
-      setSelectedMedia([media]);
-    } else {
-      alert('Media not found!');
+    if (file === null || description === '') {
+      alert("Imagem ou descrição inválidos")
+      return
     }
-  };
 
-  const handleUpdate = () => {
-    const media = JSON.parse(localStorage.getItem(mediaId));
-    if (media) {
-      media.title = title || media.title;
-      media.description = description || media.description;
-      media.tags = tags ? tags.split(',').map(tag => tag.trim()) : media.tags;
 
-      localStorage.setItem(mediaId, JSON.stringify(media));
-      alert('Media updated successfully!');
-    } else {
-      alert('Media not found!');
+    if (mediaType === 'image') {
+
+
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('description', description);
+      formData.append('tag', tags);
+      await instance.post('/images', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'bearer ' + localStorage.getItem("token")
+        },
+      }).then((response) => {
+        console.log(response.data)
+        setTitle('')
+        setDescription('')
+        setTags('')
+        setFile(null)
+        alert('Sucesso no Upload!');
+
+      }).catch((error) => {
+        console.log(error.response.data)
+      })
     }
+
   };
 
-  const handleDelete = () => {
-    localStorage.removeItem(mediaId);
-    alert('Media deleted successfully!');
+  const deleteHandle = async (media) => {
+    var url = ''
+    if (media.mime_type.startsWith('image/')) {
+      url = 'images/' + media.id
+    }
+    if (media.mime_type.startsWith('video/')) {
+      url = 'videos/' + media.id
+    }
+    if (media.mime_type.startsWith('audio/')) {
+      url = 'audios/' + media.id
+    }
+
+    await instance.delete(url, {
+      headers: {
+        'Content-Type': "application/json",
+        'Authorization': 'bearer ' + localStorage.getItem("token")
+      },
+    }).then((response) => {
+
+      handleListAll()
+
+    }).catch((error) => {
+      console.log(error.response.data)
+    })
+
   };
 
-  const handleSearch = () => {
-    const allMedia = Object.keys(localStorage).map(key => {
-      try {
-        return JSON.parse(localStorage.getItem(key));
-      } catch (e) {
-        return null;
+  const handleUpdate = async () => {
+
+    if (mediaId === '') {
+      alert('Indique um ID')
+      return
+    }
+
+    if (mediaTypeUpdate === 'image') {
+      if (fileUpdate === null && descriptionUpdate === '' && tagsUpdate === '') {
+        alert('Nenhum dado para ser atualizado')
+        return
       }
-    }).filter(media => media !== null);
+      const formData = new FormData();
 
-    const filteredMedia = allMedia.filter(media => {
-      const id = String(media.id) || '';
-      const title = media.title || '';
-      const description = media.description || '';
-      const tags = media.tags || [];
-      return (
-        id.includes(query) ||
-        title.includes(query) ||
-        description.includes(query) ||
-        tags.some(tag => tag.includes(query))
-      );
+      if (fileUpdate !== null) {
+        formData.append('file', fileUpdate);
+      }
+      if (descriptionUpdate !== '') {
+        formData.append('description', descriptionUpdate);
+      }
+      if (tagsUpdate !== '') {
+        formData.append('tag', tagsUpdate);
+      }
+
+      await instance.put('/images/' + mediaId, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'bearer ' + localStorage.getItem("token")
+        },
+      }).then((response) => {
+        console.log(response.data)
+        setDescriptionUpdate('')
+        setTagsUpdate('')
+        setFileUpdate(null)
+        alert('Update feito com sucesso');
+
+      }).catch((error) => {
+        alert(error.response.data.detail);
+      })
+    }
+
+  };
+
+  const handleSearch = async () => {
+    await instance.get("/files/?description=" + queryDescription + "&tag=" + queryTag + "&file_name=" + queryNomeArquivo, {
+      headers: {
+        'Content-Type': "application/json",
+        'Authorization': 'bearer ' + localStorage.getItem("token")
+      },
+    }).then((response) => {
+      var value = []
+
+      if (response.data.audios !== undefined) {
+        value = value.concat(response.data.audios)
+      }
+      if (response.data.videos !== undefined) {
+        value = value.concat(response.data.videos)
+      }
+      if (response.data.images !== undefined) {
+        value = value.concat(response.data.images)
+      }
+
+      setQueryMedias(value)
+
+    }).catch((error) => {
+      console.log(error.response.data)
+    })
+
+  };
+
+  const handleListAll = async () => {
+    setAllMedia({
+      all:[]
     });
 
-    setSelectedMedia(filteredMedia);
+    setFilteredMedia(null);
+
+    await instance.get('/files', {
+      headers: {
+        'Content-Type': "application/json",
+        'Authorization': 'bearer ' + localStorage.getItem("token")
+      },
+    }).then((response) => {
+      var value = response.data
+      value.all = response.data.audios.concat(response.data.images)
+      value.all = value.all.concat(response.data.videos)
+
+      setAllMedia(value);
+
+    }).catch((error) => {
+      console.log(error.response.data)
+    })
+
   };
 
-  const handleListAll = () => {
-    const allMedia = Object.keys(localStorage).map(key => {
-      try {
-        return JSON.parse(localStorage.getItem(key));
-      } catch (e) {
-        return null;
-      }
-    }).filter(media => media !== null);
-    setAllMedia(allMedia);
+  const handleFilterByType = async (type) => {
+    setFilteredMedia(null);
+    setAllMedia({
+      all:[]
+    });
+
+    await instance.get('/files', {
+      headers: {
+        'Content-Type': "application/json",
+        'Authorization': 'bearer ' + localStorage.getItem("token")
+      },
+    }).then((response) => {
+      setFilteredMedia(response.data[type]);
+    }).catch((error) => {
+      console.log(error.response.data)
+    })
+
   };
 
-  const handleFilterByType = (type) => {
-    const filtered = allMedia.filter(media => media.type === type);
-    setFilteredMedia(filtered);
+  const mediaTypes = {
+    image: ['image/jpeg', 'image/png', 'image/gif'],
+    video: ['video/mp4', 'video/avi'],
+    audio: ['audio/mpeg', 'audio/wav']
   };
-
-  const handleSelectMedia = (id) => {
-    const media = JSON.parse(localStorage.getItem(id));
-    setSelectedMedia([media]);
-  };
-
-  const renderMediaContent = (media) => {
-    const blob = dataURItoBlob(media.file);
-    const url = URL.createObjectURL(blob);
-
-    switch (media.type) {
-      case 'image':
-        return <img src={url} alt={media.title} />;
-      case 'audio':
-        return (
-          <audio controls>
-            <source src={url} type={media.fileType} />
-            Your browser does not support the audio element.
-          </audio>
-        );
-      case 'video':
-        return (
-          <video controls>
-            <source src={url} type={media.fileType} />
-            Your browser does not support the video element.
-          </video>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const dataURItoBlob = (dataURI) => {
-    const byteString = atob(dataURI.split(',')[1]);
-    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], { type: mimeString });
-  };
-
   return (
     <div className="media-manager">
-      <h1>Media Manager</h1>
+      <h1>Gerenciar Mídias</h1>
+      <Menu />
 
       <select onChange={(e) => setAction(e.target.value)}>
-        <option value="">Select Action</option>
-        <option value="create">Create</option>
-        <option value="read">Read</option>
+        <option selected value="create">Upload</option>
         <option value="update">Update</option>
-        <option value="delete">Delete</option>
-        <option value="search">Search</option>
-        <option value="list">List All</option>
+        <option value="search">Procurar</option>
+        <option value="list">Listar Todas</option>
       </select>
 
       {action === 'create' && (
-        <div className="form">
-          <h2>Create New Media</h2>
+        <div className="form" style={{ gap: 10 }}>
+          <h2>Upload</h2>
           <select onChange={(e) => setMediaType(e.target.value)}>
-            <option value="">Select Media Type</option>
-            <option value="image">Image</option>
+            <option value="image">Imagem</option>
             <option value="audio">Audio</option>
             <option value="video">Video</option>
           </select>
-          <input type="file" onChange={handleFileUpload} />
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+          <input type="file" onChange={handleFileUpload} accept={mediaType ? mediaTypes[mediaType].join(',') : '*/*'} disabled={!mediaType}
           />
+
           <textarea
-            placeholder="Description"
+            placeholder="Descrição"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <input
             type="text"
-            placeholder="Tags (comma separated)"
+            placeholder="Tags"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
           />
@@ -192,117 +251,91 @@ function MediaManager() {
         </div>
       )}
 
-      {action === 'read' && (
-        <div className="form">
-          <h2>Read Media</h2>
-          <input
-            type="text"
-            placeholder="Enter Media ID"
-            value={mediaId}
-            onChange={(e) => setMediaId(e.target.value)}
-          />
-          <button onClick={handleRead} className="submit-button">View</button>
-          {selectedMedia && selectedMedia.map(media => (
-            <div key={media.id} className="media-detail">
-              <h3>{media.title} ({media.type})</h3>
-              <p>Description: {media.description}</p>
-              <p>Tags: {media.tags.join(', ')}</p>
-              <p>Upload Date: {media.uploadDate}</p>
-              <p>ID: {media.id}</p>
-              {renderMediaContent(media)}
-            </div>
-          ))}
-        </div>
-      )}
-
       {action === 'update' && (
-        <div className="form">
-          <h2>Update Media</h2>
+        <div style={{ gap: 10 }} className="form">
+          <h2>Update Mídia</h2>
+
+          <select onChange={(e) => setMediaTypUpdate(e.target.value)}>
+            <option value="image">Imagem</option>
+            <option value="audio">Audio</option>
+            <option value="video">Video</option>
+          </select>
+
+          <input type="file" onChange={(e) => {
+            setFileUpdate(e.target.files[0]);
+          }} accept={mediaTypeUpdate ? mediaTypes[mediaTypeUpdate].join(',') : '*/*'} disabled={!mediaTypeUpdate} />
+
           <input
             type="text"
-            placeholder="Enter Media ID"
+            placeholder="Entre com o ID"
             value={mediaId}
             onChange={(e) => setMediaId(e.target.value)}
           />
+
           <input
             type="text"
-            placeholder="New Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="New Tags (comma separated)"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
+            placeholder="Descrição"
+            value={descriptionUpdate}
+            onChange={(e) => setDescriptionUpdate(e.target.value)}
           />
           <textarea
-            placeholder="New Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Tags"
+            value={tagsUpdate}
+            onChange={(e) => setTagsUpdate(e.target.value)}
           />
           <button onClick={handleUpdate} className="submit-button">Update</button>
-        </div>
-      )}
 
-      {action === 'delete' && (
-        <div className="form">
-          <h2>Delete Media</h2>
-          <input
-            type="text"
-            placeholder="Enter Media ID"
-            value={mediaId}
-            onChange={(e) => setMediaId(e.target.value)}
-          />
-          <button onClick={handleDelete} className="submit-button">Delete</button>
         </div>
       )}
 
       {action === 'search' && (
-        <div className="form">
-          <h2>Search Media</h2>
+        <div style={{ gap: 10 }} className="form">
+          <h2>Procurar Mídia</h2>
+
           <input
             type="text"
-            placeholder="Enter Search Query"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Descrição"
+            value={queryDescription}
+            onChange={(e) => setQueryDescription(e.target.value)}
           />
-          <button onClick={handleSearch} className="submit-button">Search</button>
-          {selectedMedia && selectedMedia.map(media => (
-            media.id ? <div key={media.id} className="media-detail">
-            <h3>{media.title} ({media.type})</h3>
-            <p>Description: {media.description}</p>
-            <p>Tags: {media.tags.join(', ')}</p>
-            <p>Upload Date: {media.uploadDate}</p>
-            <p>ID: {media.id}</p>
-          </div>:null
-            
-          ))}
+          <input
+            type="text"
+            placeholder="Tag"
+            value={queryTag}
+            onChange={(e) => setQueryTag(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Nome do arquivo"
+            value={queryNomeArquivo}
+            onChange={(e) => setQueryNomeArquivo(e.target.value)}
+          />
+
+          <button onClick={handleSearch} className="submit-button">Pesquisar</button>
+
+          {
+            queryMedias.map(media => (
+              <ItemMedia media={media} deleteHandle={deleteHandle} />
+            ))
+          }
+
         </div>
       )}
 
       {action === 'list' && (
         <div className="form media-list">
-          <h2>All Media</h2>
-          <button onClick={handleListAll} className="submit-button">List All</button>
-          <button onClick={() => handleFilterByType('image')} className="submit-button">Filter Images</button>
-          <button onClick={() => handleFilterByType('audio')} className="submit-button">Filter Audio</button>
-          <button onClick={() => handleFilterByType('video')} className="submit-button">Filter Videos</button>
-          {filteredMedia.length > 0 ? (
+          <h2>Todas as Mídias</h2>
+          <button onClick={handleListAll} className="submit-button">Listar Todas</button>
+          <button onClick={() => handleFilterByType('images')} className="submit-button">Filtro - Imagens</button>
+          <button onClick={() => handleFilterByType('audios')} className="submit-button">Filtro - Audios</button>
+          <button onClick={() => handleFilterByType('videos')} className="submit-button">Filtro - Videos</button>
+          {filteredMedia != null ? (
             filteredMedia.map(media => (
-              media.id ?  <div key={media.id} className="media-item" onClick={() => handleSelectMedia(media.id)}>
-              <p>ID: {media.id}</p>
-              <p>Title: {media.title}</p>
-            </div> : null
-            
+              <ItemMedia media={media} deleteHandle={deleteHandle} />
             ))
           ) : (
-            allMedia.map(media => (
-              media.id ?  <div key={media.id} className="media-item" onClick={() => handleSelectMedia(media.id)}>
-              <p>ID: {media.id}</p>
-              <p>Title: {media.title}</p>
-            </div>: null
-             
+            allMedia.all.map(media => (
+              <ItemMedia media={media} deleteHandle={deleteHandle} />
             ))
           )}
         </div>

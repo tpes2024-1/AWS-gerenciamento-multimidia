@@ -21,7 +21,7 @@ function Menu() {
 
   const getData = () => {
     setPerfil(localStorage.getItem('username'))
-    setImage( localStorage.getItem('avatar'))
+    setImage(localStorage.getItem('avatar'))
     Validators.isAuth(navigate)
   }
   const logout = () => {
@@ -73,11 +73,7 @@ function Menu() {
             window.location.pathname === '/profile/' + localStorage.getItem('user_id') ? console.log('') : navigate('/profile/' + localStorage.getItem('user_id'))
           }} className={window.location.pathname === '/profile/' + localStorage.getItem('user_id') ? 'ItemMenuActive' : 'ItemMenu'} >Profile</div>
 
-          <hr className='BarraMenu' />
 
-          <div onClick={() => {
-            window.location.pathname === '/search/users' ? console.log('') : navigate('/search/users')
-          }} className={window.location.pathname === '/search/users' ? 'ItemMenuActive' : 'ItemMenu'} >Procurar usuário</div>
         </div>
         <hr className='BarraMenu' />
         <div onClick={() => setLogoutModal(true)} className='LogoutMenu'>
@@ -92,7 +88,7 @@ function Menu() {
         </div>
 
         <div onClick={() => {
-          window.location.pathname === '/photos' ? console.log('') : navigate('/photos')
+          window.location.pathname === '/photos' ? console.log('') : navigate('/mediaManager')
         }} className='ItemMenuMobile'>
           <img style={{ width: 30, height: 25 }} src={Image} alt='Gerenciar Imagens' />
         </div>
@@ -115,7 +111,7 @@ function Menu() {
 
       </div>
       <Modal show={logoutModal} onHide={() => setLogoutModal(false)} >
-        <Modal.Body style={{ backgroundColor: 'var(--color3)', borderRadius:13 }}>
+        <Modal.Body style={{ backgroundColor: 'var(--color3)', borderRadius: 13 }}>
           <h1 style={{ color: 'white', width: '100%', fontWeight: 500, textAlign: 'left' }}>Logout</h1>
 
           <img alt='logout' src={ImageLogout} style={{ width: '85%', margin: '0px auto', textAlign: 'center' }} />
@@ -123,8 +119,8 @@ function Menu() {
             color: 'white', fontSize: '25px', width: '100%', marginBottom: '5px',
           }}>Tem certeza que deseja sair?</h1>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginTop: '20px' }}>
-            <button style={{width:80}} className='ButtonPhoto' onClick={() => logout()}>Sim</button>
-            <button style={{width:80}} className='ButtonPhoto' onClick={() => setLogoutModal(false)}>Não</button>
+            <button style={{ width: 80 }} className='ButtonPhoto' onClick={() => logout()}>Sim</button>
+            <button style={{ width: 80 }} className='ButtonPhoto' onClick={() => setLogoutModal(false)}>Não</button>
           </div>
         </Modal.Body>
       </Modal>

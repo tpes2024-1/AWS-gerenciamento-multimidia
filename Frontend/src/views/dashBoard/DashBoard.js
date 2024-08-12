@@ -265,7 +265,6 @@ function DashBoard() {
         <Menu />
         <div className='PostDashBoard'>
 
-          <div className='BtnAdd'><button style={{borderRadius:10, backgroundColor:'#213435'}}  onClick={() => { }} className='ButtonPhoto'>Upload</button></div>
 
           <div className='ListViews' onScroll={handleScrollPosts} >
             {posts.length > 0 ? posts.map((post, index) => (

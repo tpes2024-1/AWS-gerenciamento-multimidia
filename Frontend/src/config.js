@@ -1,5 +1,5 @@
 var config = {
-  baseURL: 'http://15.229.251.35:8000',
+  baseURL: 'http://52.67.103.160:8000',
   filtros: [
     {
       name: 'normal',

@@ -19,7 +19,7 @@ import MediaManager from './components/MediaManager/MediaManager';
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: DashBoard
+    Component: Login
   },
   {
     path: "/register",
