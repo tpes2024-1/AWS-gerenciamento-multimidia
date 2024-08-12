@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import auth, users
+from .routes import auth, users, images, media
 from .database import SessionLocal, engine, Base
 
 Base.metadata.create_all(bind=engine)
@@ -28,6 +28,8 @@ def get_db():
 
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(images.router)
+app.include_router(media.router)
 
 if __name__ == "__main__":
     import uvicorn
