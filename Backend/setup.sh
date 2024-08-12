@@ -20,12 +20,6 @@ source myenv/bin/activate
 pip install --upgrade pip
 pip install fastapi[all] uvicorn psycopg2-binary python-dotenv
 
-# Clonar seu repositório (substitua pela URL do seu repositório)
-git clone https://github.com/tpes2024-1/AWS-gerenciamento-multimidia.git
-cd AWS-gerenciamento-multimidia
-
-git checkout develop
-
 # Instalar dependências da aplicação
 pip install -r requirements.txt
 
