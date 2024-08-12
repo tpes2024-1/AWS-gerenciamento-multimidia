@@ -1,16 +1,14 @@
 import os
-from typing import List, Optional, Dict
+from typing import Optional
 
 import boto3
-from datetime import datetime
-from fastapi import APIRouter, Depends, Form, HTTPException, status, UploadFile, File, Query
-from sqlalchemy.exc import NoResultFound
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from ..models import User as UserModel
-from .users import get_current_active_user
-from ..utils import get_user_files, search_files_filters
 
+from .users import get_current_active_user
 from ..database import SessionLocal
+from ..models import User as UserModel
+from ..utils import get_user_files, search_files_filters
 
 router = APIRouter()
 

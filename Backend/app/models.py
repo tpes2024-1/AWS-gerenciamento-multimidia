@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict
 
 from .database import Base
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -21,6 +21,7 @@ class User(Base):
     disabled = Column(Boolean, default=False)
 
     images = relationship("Image", back_populates="user")
+    audios = relationship("Audio", back_populates="user")
 
 
 class File(Base):
@@ -65,7 +66,7 @@ class Audio(File):
     mime_type = Column(String, nullable=False)
 
     # Propriedades específicas do áudio
-    duration = Column(Integer, nullable=True)  # Duração em segundos
+    duration = Column(Float, nullable=True)  # Duração em segundos
     bitrate = Column(Integer, nullable=True)  # Taxa de bits em kbps
     sample_rate = Column(Integer, nullable=True)  # Taxa de amostragem em Hz
     channels = Column(Integer, nullable=True)  # Número de canais de áudio (1 para mono, 2 para estéreo)

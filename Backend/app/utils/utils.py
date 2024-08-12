@@ -3,7 +3,9 @@ from typing import List, Dict, Optional
 import boto3
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
-from ..models import Image as ImageModel
+import unicodedata
+import urllib.parse
+from ..models import Image as ImageModel, Audio as AudioModel
 
 s3_client = boto3.client(
     's3',
@@ -11,6 +13,11 @@ s3_client = boto3.client(
     aws_secret_access_key=os.getenv('S3_SECRET_KEY')
 )
 bucket_name = os.getenv('AWS_BUCKET_NAME')
+
+
+def remove_accents(input_str):
+    normalized_str = unicodedata.normalize('NFD', input_str)
+    return ''.join(c for c in normalized_str if not unicodedata.combining(c))
 
 
 def generate_presigned_urls(s3_key: str, file_extension: str) -> Dict[str, str]:
@@ -32,7 +39,7 @@ def generate_presigned_urls(s3_key: str, file_extension: str) -> Dict[str, str]:
 
 def get_user_files(db: Session, user_id: int) -> Dict[str, List[Dict]]:
     images = db.query(ImageModel).filter(ImageModel.user_id == user_id).all()
-    audios = []  # Implementar consulta para audios
+    audios = db.query(AudioModel).filter(AudioModel.user_id == user_id).all()  # Implementar consulta para audios
     videos = []  # Implementar consulta para vídeos
 
     images_json = []
@@ -63,7 +70,26 @@ def get_user_files(db: Session, user_id: int) -> Dict[str, List[Dict]]:
         images_json.append(json)
 
     for audio in audios:
-        ...
+        file_name_with_extension = os.path.basename(audio.s3_key)
+        file_extension = os.path.splitext(file_name_with_extension)[1].split('.')[1].lower()
+        json = {
+            "id": audio.id,
+            "user_id": audio.user_id,
+            "file_name": audio.file_name,
+            "file_size": audio.file_size,
+            "uploaded_at": audio.uploaded_at,
+            "description": audio.description,
+            "tag": audio.tag,
+            "mime_type": audio.mime_type,
+            "duration": audio.duration,
+            "bitrate": audio.bitrate,
+            "sample_rate": audio.sample_rate,
+            "channels": audio.channels,
+        }
+
+        urls = generate_presigned_urls(audio.s3_key, file_extension)
+        json.update(urls)
+        audios_json.append(json)
 
     for video in videos:
         ...
@@ -82,42 +108,43 @@ def search_files_filters(
         tag: Optional[str] = None,
         file_name: Optional[str] = None
 ) -> Dict[str, List[Dict]]:
-    filters = [ImageModel.user_id == current_user_id]  # add consultas de current_user_id pra audio e video
+    filters = [ImageModel.user_id == current_user_id,
+               AudioModel.user_id == current_user_id]  # add consultas de current_user_id pra video
 
     if description:
         filters.append(or_(
             ImageModel.description.ilike(f"%{description}%"),
-            # AudioModel.description.ilike(f"%{description}%"),
+            AudioModel.description.ilike(f"%{description}%"),
             # VideoModel.description.ilike(f"%{description}%")
         ))
 
     if tag:
         filters.append(or_(
             ImageModel.tag.ilike(f"%{tag}%"),
-            # AudioModel.tag.ilike(f"%{tag}%"),
+            AudioModel.tag.ilike(f"%{tag}%"),
             # VideoModel.tag.ilike(f"%{tag}%")
         ))
 
     if file_name:
         filters.append(or_(
             ImageModel.file_name.ilike(f"%{file_name}%"),
-            # AudioModel.file_name.ilike(f"%{file_name}%"),
+            AudioModel.file_name.ilike(f"%{file_name}%"),
             # VideoModel.file_name.ilike(f"%{file_name}%")
         ))
 
     query_filter = and_(*filters)
 
     images = db.query(ImageModel).filter(query_filter).all()
-    # audios = db.query(AudioModel).filter(query_filter).all()
+    audios = db.query(AudioModel).filter(query_filter).all()
     # videos = db.query(VideoModel).filter(query_filter).all()
 
     # Process results similarly to previous example
     images_json = [image.to_dict() for image in images]
-    # audios_json = [audio.to_dict() for audio in audios]
+    audios_json = [audio.to_dict() for audio in audios]
     # videos_json = [video.to_dict() for video in videos]
 
     return {
         "images": images_json,
-        # "audios": audios_json,
+        "audios": audios_json,
         # "videos": videos_json
     }
