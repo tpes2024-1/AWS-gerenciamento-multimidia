@@ -11,6 +11,13 @@ export default ({ media, deleteHandle }) => {
             {showMore && <>
                 <p>Tags: {media.tag}</p>
                 <p>Data: {moment(media.uploaded_at).format("DD/MM/YYYY hh:mm:ss")}</p>
+                <p>Tipo: {media.mime_type}</p>
+                
+                {media.duration !== undefined && <p>Duração: {media.duration + ' segundos'}</p>}
+                {media.channels !== undefined && <p>Duração: {media.channels + ' canal(s)'}</p>}
+
+                {<p>Tags: {media.tag}</p>}
+
 
                 {media.mime_type.startsWith('image/') && (
                     <img src={media.file_visualization} alt={media.description} style={{ maxWidth: '100%', height: 'auto' }} />
@@ -29,6 +36,7 @@ export default ({ media, deleteHandle }) => {
                         Seu navegador não suporta o elemento de áudio.
                     </audio>
                 )}
+
             </>
             }
 

@@ -110,39 +110,48 @@ function MediaManager() {
       return
     }
 
-    if (mediaTypeUpdate === 'image') {
-      if (fileUpdate === null && descriptionUpdate === '' && tagsUpdate === '') {
-        alert('Nenhum dado para ser atualizado')
-        return
-      }
-      const formData = new FormData();
-
-      if (fileUpdate !== null) {
-        formData.append('file', fileUpdate);
-      }
-      if (descriptionUpdate !== '') {
-        formData.append('description', descriptionUpdate);
-      }
-      if (tagsUpdate !== '') {
-        formData.append('tag', tagsUpdate);
-      }
-
-      await instance.put('/images/' + mediaId, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'bearer ' + localStorage.getItem("token")
-        },
-      }).then((response) => {
-        console.log(response.data)
-        setDescriptionUpdate('')
-        setTagsUpdate('')
-        setFileUpdate(null)
-        alert('Update feito com sucesso');
-
-      }).catch((error) => {
-        alert(error.response.data.detail);
-      })
+    if (fileUpdate === null && descriptionUpdate === '' && tagsUpdate === '') {
+      alert('Nenhum dado para ser atualizado')
+      return
     }
+    var url = ''
+    if (mediaTypeUpdate === 'image') {
+      var url = '/images/'
+    }
+    if (mediaTypeUpdate === 'audio') {
+      var url = '/audios/'
+    }
+    if (mediaTypeUpdate === 'video') {
+      var url = '/videos/'
+    }
+    const formData = new FormData();
+
+    if (fileUpdate !== null) {
+      formData.append('file', fileUpdate);
+    }
+    if (descriptionUpdate !== '') {
+      formData.append('description', descriptionUpdate);
+    }
+    if (tagsUpdate !== '') {
+      formData.append('tag', tagsUpdate);
+    }
+
+    await instance.put(url + mediaId, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'bearer ' + localStorage.getItem("token")
+      },
+    }).then((response) => {
+      console.log(response.data)
+      setDescriptionUpdate('')
+      setTagsUpdate('')
+      setFileUpdate(null)
+      alert('Update feito com sucesso');
+
+    }).catch((error) => {
+      alert(error.response.data.detail);
+    })
+
 
   };
 
@@ -175,7 +184,7 @@ function MediaManager() {
 
   const handleListAll = async () => {
     setAllMedia({
-      all:[]
+      all: []
     });
 
     setFilteredMedia(null);
@@ -201,7 +210,7 @@ function MediaManager() {
   const handleFilterByType = async (type) => {
     setFilteredMedia(null);
     setAllMedia({
-      all:[]
+      all: []
     });
 
     await instance.get('/files', {
@@ -220,7 +229,7 @@ function MediaManager() {
   const mediaTypes = {
     image: ['image/jpeg', 'image/png', 'image/gif'],
     video: ['video/mp4', 'video/avi'],
-    audio: ['audio/mpeg', 'audio/wav','audio/m4a','audio/mp3']
+    audio: ['audio/mpeg', 'audio/wav', 'audio/m4a', 'audio/mp3']
   };
   return (
     <div className="media-manager">
