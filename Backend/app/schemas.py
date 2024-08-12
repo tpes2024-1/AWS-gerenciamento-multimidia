@@ -65,3 +65,16 @@ class ImageSchema(FileSchema):
     color_depth: Optional[int] = None  # Profundidade de cor em bits
     resolution: Optional[str] = None  # DPI (pontos por polegada)
     exif_data: Optional[Dict[str, Optional[str]]] = None  # Dados EXIF como JSON
+
+
+class AudioSchema(FileSchema):
+    id: int
+    user_id: int
+    mime_type: str
+
+    # Propriedades específicas do áudio
+    duration: Optional[float] = None  # Duração em segundos
+    bitrate: Optional[int] = None  # Taxa de bits em kbps
+    sample_rate: Optional[int] = None  # Taxa de amostragem em Hz
+    channels: Optional[int] = None  # Número de canais de áudio (1 para mono, 2 para estéreo)
+

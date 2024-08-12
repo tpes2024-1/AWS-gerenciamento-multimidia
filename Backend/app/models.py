@@ -55,3 +55,21 @@ class Image(File):
 
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     user = relationship("User", back_populates="images")
+
+
+class Audio(File):
+    __tablename__ = 'audios'
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    mime_type = Column(String, nullable=False)
+
+    # Propriedades específicas do áudio
+    duration = Column(Integer, nullable=True)  # Duração em segundos
+    bitrate = Column(Integer, nullable=True)  # Taxa de bits em kbps
+    sample_rate = Column(Integer, nullable=True)  # Taxa de amostragem em Hz
+    channels = Column(Integer, nullable=True)  # Número de canais de áudio (1 para mono, 2 para estéreo)
+
+    # Relacionamento com o usuário
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user = relationship("User", back_populates="audios")
