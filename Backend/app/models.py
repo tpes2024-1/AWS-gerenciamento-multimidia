@@ -26,11 +26,11 @@ class File(Base):
 
     # Propriedades do arquivo
     s3_key = Column(String, nullable=False)
-    file = Column(String, nullable=False)
-    file_size = Column(Integer, nullable=False)  # Em bytes
+    file_name = Column(String, nullable=False)
+    file_size = Column(Integer, nullable=False)
     uploaded_at = Column(DateTime, default=datetime.utcnow)
     description = Column(Text, nullable=True)
-    tags = Column(ARRAY(String), nullable=True)  # Lista de tags
+    tag = Column(String, nullable=True)
 
 
 class Image(File):

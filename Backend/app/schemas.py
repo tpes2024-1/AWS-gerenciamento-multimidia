@@ -41,16 +41,17 @@ class UserCreate(BaseModel):
 
 
 class FileSchema(BaseModel):
-    user_id: int
+    s3_key: str
     file_name: str
     file_size: int
     uploaded_at: datetime = Field(default_factory=datetime.utcnow)
     description: Optional[str]
-    tags: Optional[List[str]]
+    tag: Optional[str]
 
 
 class ImageSchema(FileSchema):
     id: int
+    user_id: int
     mime_type: str
 
     width: Optional[int] = None  # Largura em pixels
