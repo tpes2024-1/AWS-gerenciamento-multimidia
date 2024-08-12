@@ -88,6 +88,7 @@ async def register_user(
 @router.get("/users/me", response_model=User)
 async def read_users_me(current_user: UserModel = Depends(get_current_active_user)):
     user_data = {
+        "id": current_user.id,
         "username": current_user.username,
         "email": current_user.email,
         "full_name": current_user.full_name,
