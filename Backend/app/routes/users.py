@@ -120,6 +120,59 @@ async def read_users_me(current_user: UserModel = Depends(get_current_active_use
 
     return user_data
 
+@router.put("/users/me", response_model=User)
+async def user_update(
+        full_name: str = Form(None),
+        email: str = Form(None),
+        description: str = Form(None),
+        password: str = Form(None),
+        profile_image: Optional[UploadFile] = File(None),
+        db: Session = Depends(get_db),
+        current_user: UserModel = Depends(get_current_active_user)  # Use o modelo SQLAlchemy
+):
+    db_user = db.query(UserModel).filter(UserModel.id == current_user.id).first()
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado"
+        )
+
+    # Atualizar dados do usuário
+    if password:
+        hashed_password = get_password_hash(password)
+        db_user.hashed_password = hashed_password
+
+    if full_name:
+        db_user.full_name = full_name
+
+    if email:
+        db_user.email = email
+
+    if description:
+        db_user.description = description
+
+    if profile_image:
+        if profile_image.content_type.lower() not in ('image/jpeg', 'image/png'):
+            raise HTTPException(
+                status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                detail="Somente arquivos JPEG ou PNG são suportados para a imagem de perfil",
+            )
+
+        image_key = f"{db_user.username}/profile/{profile_image.filename}"
+
+        try:
+            s3_client.upload_fileobj(profile_image.file, bucket_name, image_key)
+            db_user.profile_image = image_key
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Erro ao fazer upload da imagem no S3: {str(e)}"
+            )
+
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
 
 """ # Só teste
 @router.get("/users/me/items")
