@@ -108,35 +108,47 @@ def search_files_filters(
         tag: Optional[str] = None,
         file_name: Optional[str] = None
 ) -> Dict[str, List[Dict]]:
-    filters = [ImageModel.user_id == current_user_id,
-               AudioModel.user_id == current_user_id]  # add consultas de current_user_id pra video
+    # Consultar imagens
+    image_query = db.query(ImageModel).filter(ImageModel.user_id == current_user_id)
 
     if description:
-        filters.append(or_(
-            ImageModel.description.ilike(f"%{description}%"),
-            AudioModel.description.ilike(f"%{description}%"),
-            # VideoModel.description.ilike(f"%{description}%")
-        ))
-
-    if tag:
-        filters.append(or_(
-            ImageModel.tag.ilike(f"%{tag}%"),
-            AudioModel.tag.ilike(f"%{tag}%"),
-            # VideoModel.tag.ilike(f"%{tag}%")
-        ))
+        image_query = image_query.filter(ImageModel.description.ilike(f"%{description}%"))
 
     if file_name:
-        filters.append(or_(
-            ImageModel.file_name.ilike(f"%{file_name}%"),
-            AudioModel.file_name.ilike(f"%{file_name}%"),
-            # VideoModel.file_name.ilike(f"%{file_name}%")
-        ))
+        image_query = image_query.filter(ImageModel.file_name.ilike(f"%{file_name}%"))
 
-    query_filter = and_(*filters)
+    if tag:
+        image_query = image_query.filter(ImageModel.tag.ilike(f"%{tag}%"))
 
-    images = db.query(ImageModel).filter(query_filter).all()
-    audios = db.query(AudioModel).filter(query_filter).all()
-    # videos = db.query(VideoModel).filter(query_filter).all()
+    images = image_query.all()
+
+    # Consultar áudios
+    audio_query = db.query(AudioModel).filter(AudioModel.user_id == current_user_id)
+
+    if description:
+        audio_query = audio_query.filter(AudioModel.description.ilike(f"%{description}%"))
+
+    if file_name:
+        audio_query = audio_query.filter(AudioModel.file_name.ilike(f"%{file_name}%"))
+
+    if tag:
+        audio_query = audio_query.filter(AudioModel.tag.ilike(f"%{tag}%"))
+
+    audios = audio_query.all()
+
+    # Consultar vídeos (assumindo uma estrutura similar a imagens e áudios)
+    # video_query = db.query(VideoModel).filter(VideoModel.user_id == current_user_id)
+    #
+    # if description:
+    #     video_query = video_query.filter(VideoModel.description.ilike(f"%{description}%"))
+    #
+    # if file_name:
+    #     video_query = video_query.filter(VideoModel.file_name.ilike(f"%{file_name}%"))
+    #
+    # if tag:
+    #     video_query = video_query.filter(VideoModel.tag.ilike(f"%{tag}%"))
+    #
+    # videos = video_query.all()
 
     # Process results similarly to previous example
     images_json = [image.to_dict() for image in images]
