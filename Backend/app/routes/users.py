@@ -136,7 +136,7 @@ async def user_update(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Usuário não encontrado"
         )
-
+        
     # Atualizar dados do usuário
     if password:
         hashed_password = get_password_hash(password)
@@ -174,7 +174,16 @@ async def user_update(
 
     return db_user
 
-""" # Só teste
-@router.get("/users/me/items")
-async def read_users_me_items(current_user: User = Depends(get_current_active_user)):
-    return [{"item_id": 1, "owner": current_user.username, "title": "Item Teste"}] """
+@router.delete("/users/me")
+async def user_delete(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
+    db_user = db.query(UserModel).filter(UserModel.id == current_user.id).first()
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado"
+        )
+        
+    db.delete(db_user)
+    db.commit()
+
+    return {"message": "Usuário deletado com sucesso"}
