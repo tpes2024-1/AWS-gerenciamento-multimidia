@@ -35,35 +35,44 @@ function MediaManager() {
   const handleCreate = async () => {
 
     if (file === null || description === '') {
-      alert("Imagem ou descrição inválidos")
+      alert("Arquivo ou descrição inválidos")
       return
     }
-
+    var url = ''
+    const formData = new FormData();
+    formData.append('description', description);
+    formData.append('tag', tags);
 
     if (mediaType === 'image') {
-
-
-      const formData = new FormData();
       formData.append('image', file);
-      formData.append('description', description);
-      formData.append('tag', tags);
-      await instance.post('/images', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'bearer ' + localStorage.getItem("token")
-        },
-      }).then((response) => {
-        console.log(response.data)
-        setTitle('')
-        setDescription('')
-        setTags('')
-        setFile(null)
-        alert('Sucesso no Upload!');
-
-      }).catch((error) => {
-        console.log(error.response.data)
-      })
+      url = '/images'
     }
+
+    if (mediaType === 'audio') {
+      formData.append('audio', file);
+      url = '/audios'
+    }
+
+    if (mediaType === 'video') {
+      formData.append('video', file);
+      url = '/videos'
+    }
+
+
+    await instance.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'bearer ' + localStorage.getItem("token")
+      },
+    }).then((response) => {
+      setTitle('')
+      setDescription('')
+      setTags('')
+      setFile(null)
+      alert('Sucesso no Upload!');
+    }).catch((error) => {
+      console.log(error.response.data)
+    })
 
   };
 
@@ -211,7 +220,7 @@ function MediaManager() {
   const mediaTypes = {
     image: ['image/jpeg', 'image/png', 'image/gif'],
     video: ['video/mp4', 'video/avi'],
-    audio: ['audio/mpeg', 'audio/wav']
+    audio: ['audio/mpeg', 'audio/wav','audio/m4a','audio/mp3']
   };
   return (
     <div className="media-manager">
