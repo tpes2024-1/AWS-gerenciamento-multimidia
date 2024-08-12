@@ -40,6 +40,12 @@ class UserCreate(BaseModel):
     password: str
 
 
+class SearchFile(BaseModel):
+    file_name: Optional[str] = None
+    description: Optional[str] = None
+    tags: Optional[str] = None
+
+
 class FileSchema(BaseModel):
     s3_key: str
     file_name: str

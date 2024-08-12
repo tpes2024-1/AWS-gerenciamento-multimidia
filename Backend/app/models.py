@@ -1,8 +1,10 @@
 from datetime import datetime
+from typing import Dict
+
 from .database import Base
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, Float, Text, ForeignKey
-from sqlalchemy.orm import relationship, declared_attr
-from sqlalchemy.dialects.postgresql import JSONB, ARRAY
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 class User(Base):
@@ -31,6 +33,9 @@ class File(Base):
     uploaded_at = Column(DateTime, default=datetime.utcnow)
     description = Column(Text, nullable=True)
     tag = Column(String, nullable=True)
+
+    def to_dict(self) -> Dict:
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class Image(File):
